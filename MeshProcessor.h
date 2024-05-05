@@ -24,5 +24,5 @@ private:
 private:
 	void createMenu();
 	void createActions();
-
+	void signalsConnetSlots();
 };

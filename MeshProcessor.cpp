@@ -7,6 +7,8 @@ MeshProcessor::MeshProcessor(QWidget *parent)
     ui.setupUi(this);
 	vWidget = new ViewWidget(this);
 
+	createMenu();
+	createActions();
 	this->setCentralWidget(vWidget);
 }
 
@@ -24,8 +26,13 @@ void MeshProcessor::createMenu()
 
 void MeshProcessor::createActions() 
 {
-	openFile = new QAction(QStringLiteral("File"), this);
+	openFile = new QAction(QStringLiteral("file open"), this);
 	file->addAction(openFile);  //file 可以试下模板写一下mesh输入
 
+
+}
+
+void MeshProcessor::signalsConnetSlots() 
+{
 
 }

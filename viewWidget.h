@@ -1,6 +1,5 @@
 #pragma once
-#include <QtWidgets/QOpenGLWidget>
-#include <QtGui/QOpenGLFunctions>
+
 #include "SceneView.h"
 
 
@@ -19,6 +18,6 @@ public:
 
 
 private:
-	SceneView *sceneViewer;
+	SceneView sceneViewer;
 };
 
