@@ -15,9 +15,10 @@ public:
 
 	void setBackgroundColor();
 
-
+	void setMesh(PolygonMesh *mesh);
 
 private:
 	SceneView sceneViewer;
+	PolygonMesh *mesh;
 };
 

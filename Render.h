@@ -5,6 +5,7 @@
 #include <GL\GL.h>
 #include "glut.h"
 #include "RenderingMaterial.h"
+#include "Kernel.h"
 
 enum RenderMode {
 	RENDERING_MODE_POINT = 0x0001,
@@ -23,8 +24,22 @@ public:
 
 	static void setMaterial(GLfloat mat[17]);
 	void setMaterialByMode(unsigned int mode);
+	void setColoredMaterial(int color);
+	void setRenderMesh(PolygonMesh* mesh);
 	void setRenderMode(unsigned int mode);
 	void updateRenderingMaterial(float mat[]);
+
+	// render mode
+	void build();
+	void buildPoints();
+	void buildWireFrame();
+	//void buildHiddenWire();
+	//void buildSmooth();
+	//void buildFlat();
+	//void buildWireFlat();
+
+private:
+	PolygonMesh* mesh;
 
 private:
 	unsigned int mode;

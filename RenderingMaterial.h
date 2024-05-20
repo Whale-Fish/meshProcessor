@@ -12,7 +12,6 @@ public:
 	// material for mesh vertex
 	static float matMeshVertex[17];
 
-
 	static float matRedColor[17];
 	static float matBlueColor[17];
 	static float matGreenColor[17];

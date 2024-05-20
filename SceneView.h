@@ -12,6 +12,9 @@ public:
 	void resize(int w, int h);
 	void sceneView();
 
+	void setLights();
+	Render getRender();
+
 protected:
 	GLdouble		fovy;
 	GLdouble        zNear;
@@ -30,5 +33,16 @@ private:
 private:
 	QPoint lastPos;
 	Render renderer;
+};
+
+class showStatus {
+public:
+	
+
+
+private:
+	int isShow = 0;
+	int hasNors = 0;
+
 };
 

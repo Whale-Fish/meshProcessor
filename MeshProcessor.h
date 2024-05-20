@@ -1,6 +1,9 @@
 #pragma once
 
 #include <QtWidgets/QMainWindow>
+#include <QFileDialog.h>
+#include <string>
+#include <stack>
 #include "ui_MeshProcessor.h"
 #include "viewWidget.h"
 
@@ -19,10 +22,20 @@ private:
 
 	QMenu *file;
 
-	QAction *openFile;
+	QAction *openFileAction;
+
+private:
+	PolygonMesh *mesh;
+	std::string curFileName;
 
 private:
 	void createMenu();
 	void createActions();
 	void signalsConnetSlots();
+	void setCurFileName(std::string path);
+
+	// slots func
+private slots:
+	void openFile();
+
 };

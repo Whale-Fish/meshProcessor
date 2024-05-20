@@ -3,7 +3,7 @@
 
 ViewWidget::ViewWidget(QWidget *parent)
 {
-
+	mesh = nullptr;
 }
 
 ViewWidget::~ViewWidget() 
@@ -30,4 +30,9 @@ void ViewWidget::setBackgroundColor() {
 
 
 
+}
+
+void  ViewWidget::setMesh(PolygonMesh *mesh_)
+{
+	sceneViewer.getRender().setRenderMesh(mesh_);
 }

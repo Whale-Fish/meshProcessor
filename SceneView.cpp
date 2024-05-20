@@ -52,6 +52,14 @@ void SceneView::sceneView()
 	glRotatef(elevation, 1, 0, 0);
 	glRotatef(azimuth, 0, 1, 0);
 
+	setLights();
+
+	// painting
+	renderer.build();
+}
+
+void SceneView::setLights()
+{
 	GLfloat ambient[] = { 0.4, 0.6, 0.2, 1.0 };
 	GLfloat position[] = { 1.0, 1.0, 1.0, 1.0 };
 
@@ -60,12 +68,9 @@ void SceneView::sceneView()
 	glEnable(GL_LIGHT0);
 	glLightfv(GL_LIGHT0, GL_AMBIENT, ambient);
 	glLightfv(GL_LIGHT0, GL_POSITION, position);
+}
 
-	renderer.setMaterialByMode(0x0001);
-
-	glBegin(GL_LINES);
-	glColor3f(1.0, 0.0, 0.0);
-	glVertex2f(0.0, 0.0);
-	glVertex2f(1.0, 1.0);
-	glEnd();
+Render SceneView::getRender()
+{
+	return renderer;
 }
