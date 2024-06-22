@@ -15,14 +15,20 @@ public:
     MeshProcessor(QWidget *parent = nullptr);
     ~MeshProcessor();
 
+	Render* getRenderer();
+
 private:
     Ui::MeshProcessorClass ui;
 
 	ViewWidget *vWidget;
 
 	QMenu *file;
+	QMenu *render;
 
 	QAction *openFileAction;
+
+	QAction *pointMode;
+	QAction *wireFrameMode;
 
 private:
 	PolygonMesh *mesh;
@@ -37,5 +43,6 @@ private:
 	// slots func
 private slots:
 	void openFile();
-
+	void showPoints();
+	void showWireFrame();
 };

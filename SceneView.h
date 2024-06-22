@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Render.h"
+#include <Qt3DInput/QMouseEvent>  
 
 /**
 * this class is created for scene operation, such as resize or mouse events
@@ -8,12 +9,17 @@
 class SceneView: public QOpenGLWidget, protected QOpenGLFunctions
 {
 public:
+	SceneView();
+	~SceneView();
+
 	void initialize();
 	void resize(int w, int h);
 	void sceneView();
 
+	void setBackgroundColor();
+	void setCameraParams(float elevation, float azimuth, float dist);
 	void setLights();
-	Render getRender();
+	void getRender(Render* &renderer);
 
 protected:
 	GLdouble		fovy;
@@ -31,8 +37,7 @@ private:
 	float dist = 3.0;
 
 private:
-	QPoint lastPos;
-	Render renderer;
+	Render* renderer;
 };
 
 class showStatus {

@@ -126,9 +126,9 @@ void Render::setColoredMaterial(int color)
 	}
 }
 
-void Render::setRenderMesh(PolygonMesh* mesh_)
+void Render::setRenderMesh(PolygonMesh* mesh)
 {
-	mesh = mesh_;
+	this->mesh = mesh;
 }
 
 /**
@@ -159,9 +159,8 @@ void Render::build()
 
 void Render::buildPoints() 
 {
-	if (!mesh) 
+	if (!mesh)
 	{
-		std::cerr << "mesh is null!" << std::endl;
 		return;
 	}
 
@@ -183,7 +182,6 @@ void Render::buildWireFrame()
 {
 	if (!mesh)
 	{
-		std::cerr << "mesh is null!" << std::endl;
 		return;
 	}
 

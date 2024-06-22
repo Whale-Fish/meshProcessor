@@ -1,4 +1,19 @@
 #include "SceneView.h"
+#include "glut.h"
+
+SceneView::SceneView()
+{
+	renderer = new Render();
+}
+
+SceneView::~SceneView()
+{
+	if (renderer)
+	{
+		delete renderer;
+		renderer = nullptr;
+	}
+}
 
 void SceneView::initialize() 
 {
@@ -55,7 +70,7 @@ void SceneView::sceneView()
 	setLights();
 
 	// painting
-	renderer.build();
+	renderer->build();
 }
 
 void SceneView::setLights()
@@ -70,7 +85,14 @@ void SceneView::setLights()
 	glLightfv(GL_LIGHT0, GL_POSITION, position);
 }
 
-Render SceneView::getRender()
+void SceneView::getRender(Render* &renderer)
 {
-	return renderer;
+	renderer = this->renderer;
+}
+
+void SceneView::setCameraParams(float elevation, float azimuth, float dist)
+{
+	this->elevation = elevation;
+	this->azimuth = azimuth;
+	this->dist = dist;
 }
