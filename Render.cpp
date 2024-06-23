@@ -152,6 +152,18 @@ void Render::build()
 	case 0x0002:
 		buildWireFrame();
 		break;
+	case 0x0004:
+		buildHiddenWire();
+		break;
+	case 0x0008:
+		buildFlat();
+		break;
+	case 0x0010:
+		buildWireFlat();
+		break;
+	case 0x0020:
+		buildSmooth();
+		break;
 	default:
 		break;
 	}
@@ -168,6 +180,7 @@ void Render::buildPoints()
 
 	glShadeModel(GL_SMOOTH);
 	setMaterialByMode(mode);
+	setColoredMaterial(9);
 	glPointSize(3.0);
 	for (auto it = mesh->vertices_begin(); it != mesh->vertices_end(); ++it)
 	{
@@ -189,6 +202,7 @@ void Render::buildWireFrame()
 
 	glShadeModel(GL_SMOOTH);
 	setMaterialByMode(mode);
+	setColoredMaterial(10);
 	glLineWidth(1.2f);
 	for (auto it = mesh->edges_begin(); it != mesh->edges_end(); ++it)
 	{
@@ -202,3 +216,169 @@ void Render::buildWireFrame()
 	}
 }
 
+void Render::buildHiddenWire()
+{
+	if (!mesh)
+	{
+		return;
+	}
+
+	setMaterial(matRendering);
+
+	glPushAttrib(GL_ENABLE_BIT | GL_CURRENT_BIT | GL_LIGHTING_BIT);
+	glEnable(GL_POLYGON_OFFSET_FILL);
+	glPolygonOffset(1.0, 1.0);
+	glDisable(GL_LIGHTING);
+	glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	setColoredMaterial(10);
+	for (auto f_it = mesh->faces_begin(); f_it != mesh->faces_end(); ++f_it)
+	{
+		glBegin(GL_POLYGON);
+		for (auto fv_it = mesh->fv_iter(f_it); fv_it.is_valid(); ++fv_it)
+		{
+			POINT3D v;
+			v = mesh->point((*fv_it));
+			glVertex3d(v[0], v[1], v[2]);
+		}
+		glEnd();
+	}
+
+	glEnable(GL_LIGHTING);
+	glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
+	for (auto f_it = mesh->faces_begin(); f_it != mesh->faces_end(); ++f_it)
+	{
+		glBegin(GL_POLYGON);
+		for (auto fv_it = mesh->fv_iter(f_it); fv_it.is_valid(); ++fv_it)
+		{
+			POINT3D v;
+			v = mesh->point((*fv_it));
+			glVertex3d(v[0], v[1], v[2]);
+		}
+		glEnd();
+	}
+
+	glPopAttrib();
+}
+
+void Render::buildSmooth()
+{
+	if (!mesh)
+	{
+		return;
+	}
+
+	setMaterial(matRendering);
+	glShadeModel(GL_SMOOTH);
+	GLfloat specular[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
+	GLfloat shinines[] = { 50.0 };
+	glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, specular);
+	glMaterialfv(GL_FRONT_AND_BACK, GL_SHININESS, shinines);
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	setColoredMaterial(10);
+
+	for (auto f_it = mesh->faces_begin(); f_it != mesh->faces_end(); ++f_it)
+	{
+		glBegin(GL_POLYGON);
+		for (auto fv_it = mesh->fv_iter(f_it); fv_it.is_valid(); ++fv_it)
+		{
+			POINT3D v;
+			v = mesh->point((*fv_it));
+			glVertex3d(v[0], v[1], v[2]);
+		}
+		glEnd();
+	}
+}
+
+void Render::buildFlat()
+{
+	if (!mesh)
+	{
+		return;
+	}
+
+	setMaterial(matRendering);
+	glShadeModel(GL_FLAT);
+	GLfloat specular[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
+	GLfloat shinines[] = { 50.0 };
+	glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, specular);
+	glMaterialfv(GL_FRONT_AND_BACK, GL_SHININESS, shinines);
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	setColoredMaterial(10);
+
+	for (auto f_it = mesh->faces_begin(); f_it != mesh->faces_end(); ++f_it)
+	{
+		glBegin(GL_POLYGON);
+		for (auto fv_it = mesh->fv_iter(f_it); fv_it.is_valid(); ++fv_it)
+		{
+			POINT3D v;
+			v = mesh->point((*fv_it));
+			glVertex3d(v[0], v[1], v[2]);
+		}
+		glEnd();
+	}
+
+}
+void Render::buildWireFlat()
+{
+	if (!mesh)
+	{
+		return;
+	}
+
+	GLdouble m_MvMatrix[16];
+	GLdouble m_ProjMatrix[16];
+
+	glGetDoublev(GL_MODELVIEW_MATRIX, m_MvMatrix);
+
+	glGetDoublev(GL_PROJECTION_MATRIX, m_ProjMatrix);
+
+	setMaterial(matRendering);
+	glShadeModel(GL_FLAT);
+	GLfloat specular[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
+	GLfloat shinines[] = { 50.0 };
+	glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, specular);
+	glMaterialfv(GL_FRONT_AND_BACK, GL_SHININESS, shinines);
+
+	glPushAttrib(GL_ENABLE_BIT | GL_CURRENT_BIT | GL_LIGHTING_BIT);
+	glEnable(GL_POLYGON_OFFSET_FILL);
+	glPolygonOffset(1.0f, 1.0f);
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	setColoredMaterial(10);
+
+	for (auto f_it = mesh->faces_begin(); f_it != mesh->faces_end(); ++f_it)
+	{
+		glBegin(GL_POLYGON);
+		for (auto fv_it = mesh->fv_iter(f_it); fv_it.is_valid(); ++fv_it)
+		{
+			POINT3D v;
+			v = mesh->point((*fv_it));
+			glVertex3d(v[0], v[1], v[2]);
+		}
+		glEnd();
+	}
+
+	glDisable(GL_POLYGON_OFFSET_FILL);
+
+	glEnable(GL_COLOR_MATERIAL);
+	glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
+	glColor3d(0.0f, 0.0f, 0.0f);
+	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	for (auto f_it = mesh->faces_begin(); f_it != mesh->faces_end(); ++f_it)
+	{
+		glBegin(GL_POLYGON);
+		for (auto fv_it = mesh->fv_iter(f_it); fv_it.is_valid(); ++fv_it)
+		{
+			POINT3D v;
+			v = mesh->point((*fv_it));
+			glVertex3d(v[0], v[1], v[2]);
+		}
+		glEnd();
+	}
+
+	glDisable(GL_COLOR_MATERIAL);
+
+	glPopAttrib();
+}

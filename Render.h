@@ -33,10 +33,10 @@ public:
 	void build();
 	void buildPoints();
 	void buildWireFrame();
-	//void buildHiddenWire();
-	//void buildSmooth();
-	//void buildFlat();
-	//void buildWireFlat();
+	void buildHiddenWire();
+	void buildSmooth();
+	void buildFlat();
+	void buildWireFlat();
 
 private:
 	PolygonMesh* mesh;

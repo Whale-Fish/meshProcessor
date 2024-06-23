@@ -45,6 +45,18 @@ void MeshProcessor::createActions()
 
 	wireFrameMode = new QAction(QStringLiteral("wire frame"), this);
 	render->addAction(wireFrameMode);
+
+	hiddenWireMode = new QAction(QStringLiteral("hidden wire"), this);
+	render->addAction(hiddenWireMode);
+
+	flatMode = new QAction(QStringLiteral("flat face"), this);
+	render->addAction(flatMode);
+
+	smoothMode = new QAction(QStringLiteral("smooth face"), this);
+	render->addAction(smoothMode);
+
+	wireFlatMode = new QAction(QStringLiteral("wire flat"), this);
+	render->addAction(wireFlatMode);
 }
 
 void MeshProcessor::signalsConnetSlots() 
@@ -53,6 +65,10 @@ void MeshProcessor::signalsConnetSlots()
 
 	connect(pointMode, SIGNAL(triggered()), this, SLOT(showPoints()));
 	connect(wireFrameMode, SIGNAL(triggered()), this, SLOT(showWireFrame()));
+	connect(hiddenWireMode, SIGNAL(triggered()), this, SLOT(showHiddenWire()));
+	connect(flatMode, SIGNAL(triggered()), this, SLOT(showFlat()));
+	connect(smoothMode, SIGNAL(triggered()), this, SLOT(showSmooth()));
+	connect(wireFlatMode, SIGNAL(triggered()), this, SLOT(showWireFlat()));
 }
 
 Render* MeshProcessor::getRenderer()
@@ -123,6 +139,29 @@ void MeshProcessor::showPoints()
 void MeshProcessor::showWireFrame()
 {
 	getRenderer()->setRenderMode(0x0002);
+	vWidget->update();
+}
+
+void MeshProcessor::showHiddenWire()
+{
+	getRenderer()->setRenderMode(0x0004);
+	vWidget->update();
+}
+
+void MeshProcessor::showFlat()
+{
+	getRenderer()->setRenderMode(0x0008);
+	vWidget->update();
+}
+void MeshProcessor::showWireFlat()
+{
+	getRenderer()->setRenderMode(0x0010);
+	vWidget->update();
+}
+
+void MeshProcessor::showSmooth()
+{
+	getRenderer()->setRenderMode(0x0020);
 	vWidget->update();
 }
 

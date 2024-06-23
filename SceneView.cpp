@@ -37,8 +37,10 @@ void SceneView::initialize()
 	zFar = 1000.0;
 	fovy = 45.0f;
 
-	glEnable(GL_LIGHTING);
-	glEnable(GL_LIGHT0);
+	//glEnable(GL_LIGHTING);
+	//glEnable(GL_LIGHT0);
+	//glEnable(GL_LIGHT1);
+	//glEnable(GL_LIGHT2);
 }
 
 void SceneView::resize(int w,int h)
@@ -76,13 +78,23 @@ void SceneView::sceneView()
 void SceneView::setLights()
 {
 	GLfloat ambient[] = { 0.4, 0.6, 0.2, 1.0 };
-	GLfloat position[] = { 1.0, 1.0, 1.0, 1.0 };
+	GLfloat position1[] = { 1.0, 1.0, 1.0, 1.0 };
+	GLfloat position2[] = { -1.0, 1.0, -1.0, 1.0 };
+	GLfloat position3[] = { 1.0, -1.0, -1.0, 1.0 };
 
 	glPushMatrix();
 	glEnable(GL_LIGHTING);
 	glEnable(GL_LIGHT0);
 	glLightfv(GL_LIGHT0, GL_AMBIENT, ambient);
-	glLightfv(GL_LIGHT0, GL_POSITION, position);
+	glLightfv(GL_LIGHT0, GL_POSITION, position1);
+
+	glEnable(GL_LIGHT1);
+	glLightfv(GL_LIGHT1, GL_AMBIENT, ambient);
+	glLightfv(GL_LIGHT1, GL_POSITION, position2);
+
+	glEnable(GL_LIGHT2);
+	glLightfv(GL_LIGHT1, GL_AMBIENT, ambient);
+	glLightfv(GL_LIGHT1, GL_POSITION, position3);
 }
 
 void SceneView::getRender(Render* &renderer)

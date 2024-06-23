@@ -29,6 +29,10 @@ private:
 
 	QAction *pointMode;
 	QAction *wireFrameMode;
+	QAction *hiddenWireMode;
+	QAction *flatMode;
+	QAction *smoothMode;
+	QAction *wireFlatMode;
 
 private:
 	PolygonMesh *mesh;
@@ -45,4 +49,8 @@ private slots:
 	void openFile();
 	void showPoints();
 	void showWireFrame();
+	void showHiddenWire();
+	void showFlat();
+	void showWireFlat();
+	void showSmooth();
 };
