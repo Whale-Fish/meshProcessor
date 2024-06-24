@@ -6,6 +6,7 @@
 #include <stack>
 #include "ui_MeshProcessor.h"
 #include "viewWidget.h"
+#include "Algorithm/Algorithm.h"
 
 class MeshProcessor : public QMainWindow
 {
@@ -24,6 +25,7 @@ private:
 
 	QMenu *file;
 	QMenu *render;
+	QMenu* subdivsion;
 
 	QAction *openFileAction;
 
@@ -34,9 +36,12 @@ private:
 	QAction *smoothMode;
 	QAction *wireFlatMode;
 
+	QAction *subSqrt2;
+
 private:
 	PolygonMesh *mesh;
 	std::string curFileName;
+	Algorithm alg;
 
 private:
 	void createMenu();
@@ -53,4 +58,5 @@ private slots:
 	void showFlat();
 	void showWireFlat();
 	void showSmooth();
+	void subMeshSqrt2();
 };

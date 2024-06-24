@@ -32,7 +32,7 @@ void MeshProcessor::createMenu()
 {
 	file = menuBar()->addMenu(QStringLiteral("File"));
 	render = menuBar()->addMenu(QStringLiteral("Render"));
-
+	subdivsion = menuBar()->addMenu(QStringLiteral("Subdivsion"));
 }
 
 void MeshProcessor::createActions() 
@@ -57,6 +57,9 @@ void MeshProcessor::createActions()
 
 	wireFlatMode = new QAction(QStringLiteral("wire flat"), this);
 	render->addAction(wireFlatMode);
+
+	subSqrt2 = new QAction(QStringLiteral("sqrt2"), this);
+	subdivsion->addAction(subSqrt2);
 }
 
 void MeshProcessor::signalsConnetSlots() 
@@ -69,6 +72,8 @@ void MeshProcessor::signalsConnetSlots()
 	connect(flatMode, SIGNAL(triggered()), this, SLOT(showFlat()));
 	connect(smoothMode, SIGNAL(triggered()), this, SLOT(showSmooth()));
 	connect(wireFlatMode, SIGNAL(triggered()), this, SLOT(showWireFlat()));
+
+	connect(subSqrt2, SIGNAL(triggered()), this, SLOT(subMeshSqrt2()));
 }
 
 Render* MeshProcessor::getRenderer()
@@ -128,6 +133,7 @@ void MeshProcessor::openFile()
 	}
 
 	vWidget->setMesh(mesh);
+	alg.subCnt = 0;
 }
 
 void MeshProcessor::showPoints()
@@ -163,6 +169,20 @@ void MeshProcessor::showSmooth()
 {
 	getRenderer()->setRenderMode(0x0020);
 	vWidget->update();
+}
+
+void MeshProcessor::subMeshSqrt2()
+{
+	PolygonMesh newMesh(*mesh);
+
+	long t1, t2;
+	t1 = GetTickCount();
+	alg.meshSubdivision(&newMesh, *mesh, Subdivision::SQRT2);
+	vWidget->update();
+	t2 = GetTickCount();
+
+	alg.subCnt++;
+	printf("%d th sqrt2 subdivsion cost time: %d\n", alg.subCnt, t2 - t1);
 }
 
 
