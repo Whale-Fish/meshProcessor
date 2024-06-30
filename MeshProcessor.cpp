@@ -37,26 +37,47 @@ void MeshProcessor::createMenu()
 
 void MeshProcessor::createActions() 
 {
-	openFileAction = new QAction(QStringLiteral("file open"), this);
-	file->addAction(openFileAction);  //file 可以试下模板写一下mesh输入
+	openQuadFile = new QAction(QStringLiteral("file open"), this);
+	file->addAction(openQuadFile);  //file 可以试下模板写一下mesh输入
+	QIcon icon1;
+	icon1.addFile(QString::fromUtf8("Icons/fileopen.png"), QSize(), QIcon::Normal, QIcon::Off);
+	openQuadFile->setIcon(icon1);
 
 	pointMode = new QAction(QStringLiteral("point cloud"), this);
 	render->addAction(pointMode);
+	QIcon icon2;
+	icon2.addFile(QString::fromUtf8("Icons/points.png"), QSize(), QIcon::Normal, QIcon::Off);
+	pointMode->setIcon(icon2);
 
 	wireFrameMode = new QAction(QStringLiteral("wire frame"), this);
 	render->addAction(wireFrameMode);
+	QIcon icon3;
+	icon3.addFile(QString::fromUtf8("Icons/wire.png"), QSize(), QIcon::Normal, QIcon::Off);
+	wireFrameMode->setIcon(icon3);
 
 	hiddenWireMode = new QAction(QStringLiteral("hidden wire"), this);
 	render->addAction(hiddenWireMode);
+	QIcon icon4;
+	icon4.addFile(QString::fromUtf8("Icons/backlines.png"), QSize(), QIcon::Normal, QIcon::Off);
+	hiddenWireMode->setIcon(icon4);
 
 	flatMode = new QAction(QStringLiteral("flat face"), this);
 	render->addAction(flatMode);
+	QIcon icon5;
+	icon5.addFile(QString::fromUtf8("Icons/flat.png"), QSize(), QIcon::Normal, QIcon::Off);
+	flatMode->setIcon(icon5);
 
 	smoothMode = new QAction(QStringLiteral("smooth face"), this);
 	render->addAction(smoothMode);
+	QIcon icon6;
+	icon6.addFile(QString::fromUtf8("Icons/smooth.png"), QSize(), QIcon::Normal, QIcon::Off);
+	smoothMode->setIcon(icon6);
 
 	wireFlatMode = new QAction(QStringLiteral("wire flat"), this);
 	render->addAction(wireFlatMode);
+	QIcon icon7;
+	icon7.addFile(QString::fromUtf8("Icons/flatlines.png"), QSize(), QIcon::Normal, QIcon::Off);
+	wireFlatMode->setIcon(icon7);
 
 	subSqrt2 = new QAction(QStringLiteral("sqrt2"), this);
 	subdivsion->addAction(subSqrt2);
@@ -64,7 +85,7 @@ void MeshProcessor::createActions()
 
 void MeshProcessor::signalsConnetSlots() 
 {
-	connect(openFileAction, SIGNAL(triggered()), this, SLOT(openFile()));
+	connect(openQuadFile, SIGNAL(triggered()), this, SLOT(openFile()));
 
 	connect(pointMode, SIGNAL(triggered()), this, SLOT(showPoints()));
 	connect(wireFrameMode, SIGNAL(triggered()), this, SLOT(showWireFrame()));

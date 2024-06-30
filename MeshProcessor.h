@@ -6,7 +6,7 @@
 #include <stack>
 #include "ui_MeshProcessor.h"
 #include "viewWidget.h"
-#include "Algorithm/Algorithm.h"
+#include "Algorithm.h"
 
 class MeshProcessor : public QMainWindow
 {
@@ -27,7 +27,8 @@ private:
 	QMenu *render;
 	QMenu* subdivsion;
 
-	QAction *openFileAction;
+	QAction *openQuadFile;
+	QAction *openTriFile; // todo
 
 	QAction *pointMode;
 	QAction *wireFrameMode;
