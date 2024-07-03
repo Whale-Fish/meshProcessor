@@ -17,6 +17,7 @@ public:
 	void wheelEvent(QWheelEvent *wle);
 
 	void setMesh(PolygonMesh* &mesh);
+	void setMesh(TriMesh* &mesh);
 	void getSceneViewer(SceneView* &sceneViewer);
 
 	SceneView* sceneViewer;

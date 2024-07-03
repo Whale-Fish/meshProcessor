@@ -40,19 +40,26 @@ private:
 	QAction *subSqrt2;
 
 private:
-	PolygonMesh *mesh;
+	union{
+		PolygonMesh *quadMesh;
+		TriMesh *triMesh;
+	}mesh;
+
+	bool isTri;
 	std::string curFileName;
 	Algorithm alg;
 
 private:
 	void createMenu();
 	void createActions();
+	void updateActionsEnabledStatus();
 	void signalsConnetSlots();
 	void setCurFileName(std::string path);
 
 	// slots func
 private slots:
-	void openFile();
+	void openTriFileAction();
+	void openQuadFileAction();
 	void showPoints();
 	void showWireFrame();
 	void showHiddenWire();

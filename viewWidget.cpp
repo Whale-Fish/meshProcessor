@@ -72,6 +72,13 @@ void  ViewWidget::setMesh(PolygonMesh* &mesh)
 	r->setRenderMesh(mesh);
 }
 
+void  ViewWidget::setMesh(TriMesh* &mesh)
+{
+	Render *r;
+	sceneViewer->getRender(r);
+	r->setRenderMesh(mesh);
+}
+
 void ViewWidget::getSceneViewer(SceneView* &sceneViewer)
 {
 	sceneViewer = this->sceneViewer;

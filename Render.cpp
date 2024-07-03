@@ -2,7 +2,8 @@
 
 Render::Render()
 {
-	mesh = nullptr;
+	mesh.triMesh = nullptr;
+	mesh.quadMesh = nullptr;
 	mode = 0x0002;
 }
 
@@ -128,7 +129,12 @@ void Render::setColoredMaterial(int color)
 
 void Render::setRenderMesh(PolygonMesh* mesh)
 {
-	this->mesh = mesh;
+	this->mesh.quadMesh = mesh;
+}
+
+void Render::setRenderMesh(TriMesh* mesh)
+{
+	this->mesh.triMesh = mesh;
 }
 
 /**
@@ -139,6 +145,38 @@ void Render::updateRenderingMaterial(float mat[])
 	for (unsigned int i = 0; i < 17; i++)
 	{
 		matRendering[i] = mat[i];
+	}
+}
+
+void Render::paintFaces()
+{
+	if (mesh.triMesh)
+	{
+		for (auto f_it = mesh.triMesh->faces_begin(); f_it != mesh.triMesh->faces_end(); ++f_it)
+		{
+			glBegin(GL_POLYGON);
+			for (auto fv_it = mesh.triMesh->fv_iter(f_it); fv_it.is_valid(); ++fv_it)
+			{
+				POINT3D v;
+				v = mesh.triMesh->point((*fv_it));
+				glVertex3d(v[0], v[1], v[2]);
+			}
+			glEnd();
+		}
+	}
+	else
+	{
+		for (auto f_it = mesh.quadMesh->faces_begin(); f_it != mesh.quadMesh->faces_end(); ++f_it)
+		{
+			glBegin(GL_POLYGON);
+			for (auto fv_it = mesh.quadMesh->fv_iter(f_it); fv_it.is_valid(); ++fv_it)
+			{
+				POINT3D v;
+				v = mesh.quadMesh->point((*fv_it));
+				glVertex3d(v[0], v[1], v[2]);
+			}
+			glEnd();
+		}
 	}
 }
 
@@ -171,29 +209,41 @@ void Render::build()
 
 void Render::buildPoints() 
 {
-	if (!mesh)
+	if (!mesh.triMesh && !mesh.quadMesh)
 	{
 		return;
 	}
 
 	POINT3D v;
-
 	glShadeModel(GL_SMOOTH);
 	setMaterialByMode(mode);
 	setColoredMaterial(9);
 	glPointSize(3.0);
-	for (auto it = mesh->vertices_begin(); it != mesh->vertices_end(); ++it)
+	if (mesh.triMesh)
 	{
-		glBegin(GL_POINTS);
-		v = mesh->point(it);
-		glVertex3d(v[0], v[1], v[2]);
-		glEnd();
+		for (auto it = mesh.triMesh->vertices_begin(); it != mesh.triMesh->vertices_end(); ++it)
+		{
+			glBegin(GL_POINTS);
+			v = mesh.triMesh->point(it);
+			glVertex3d(v[0], v[1], v[2]);
+			glEnd();
+		}
+	}
+	else
+	{
+		for (auto it = mesh.quadMesh->vertices_begin(); it != mesh.quadMesh->vertices_end(); ++it)
+		{
+			glBegin(GL_POINTS);
+			v = mesh.quadMesh->point(it);
+			glVertex3d(v[0], v[1], v[2]);
+			glEnd();
+		}
 	}
 }
 
 void Render::buildWireFrame()
 {
-	if (!mesh)
+	if (!mesh.triMesh && !mesh.quadMesh)
 	{
 		return;
 	}
@@ -204,21 +254,38 @@ void Render::buildWireFrame()
 	setMaterialByMode(mode);
 	setColoredMaterial(10);
 	glLineWidth(1.2f);
-	for (auto it = mesh->edges_begin(); it != mesh->edges_end(); ++it)
+	if (mesh.triMesh)
 	{
-		v1 = mesh->point(mesh->from_vertex_handle(mesh->halfedge_handle((*it), 0)));
-		v2 = mesh->point(mesh->to_vertex_handle(mesh->halfedge_handle((*it), 0)));
+		for (auto it = mesh.triMesh->edges_begin(); it != mesh.triMesh->edges_end(); ++it)
+		{
+			v1 = mesh.triMesh->point(mesh.triMesh->from_vertex_handle(mesh.triMesh->halfedge_handle((*it), 0)));
+			v2 = mesh.triMesh->point(mesh.triMesh->to_vertex_handle(mesh.triMesh->halfedge_handle((*it), 0)));
 
-		glBegin(GL_LINES);
-		glVertex3d(v1[0], v1[1], v1[2]);
-		glVertex3d(v2[0], v2[1], v2[2]);
-		glEnd();
+			glBegin(GL_LINES);
+			glVertex3d(v1[0], v1[1], v1[2]);
+			glVertex3d(v2[0], v2[1], v2[2]);
+			glEnd();
+		}
 	}
+	else
+	{
+		for (auto it = mesh.quadMesh->edges_begin(); it != mesh.quadMesh->edges_end(); ++it)
+		{
+			v1 = mesh.quadMesh->point(mesh.quadMesh->from_vertex_handle(mesh.quadMesh->halfedge_handle((*it), 0)));
+			v2 = mesh.quadMesh->point(mesh.quadMesh->to_vertex_handle(mesh.quadMesh->halfedge_handle((*it), 0)));
+
+			glBegin(GL_LINES);
+			glVertex3d(v1[0], v1[1], v1[2]);
+			glVertex3d(v2[0], v2[1], v2[2]);
+			glEnd();
+		}
+	}
+
 }
 
 void Render::buildHiddenWire()
 {
-	if (!mesh)
+	if (!mesh.triMesh && !mesh.quadMesh)
 	{
 		return;
 	}
@@ -232,40 +299,21 @@ void Render::buildHiddenWire()
 	glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	setColoredMaterial(10);
-	for (auto f_it = mesh->faces_begin(); f_it != mesh->faces_end(); ++f_it)
-	{
-		glBegin(GL_POLYGON);
-		for (auto fv_it = mesh->fv_iter(f_it); fv_it.is_valid(); ++fv_it)
-		{
-			POINT3D v;
-			v = mesh->point((*fv_it));
-			glVertex3d(v[0], v[1], v[2]);
-		}
-		glEnd();
-	}
+	
+	paintFaces();
 
 	glEnable(GL_LIGHTING);
 	glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-
-	for (auto f_it = mesh->faces_begin(); f_it != mesh->faces_end(); ++f_it)
-	{
-		glBegin(GL_POLYGON);
-		for (auto fv_it = mesh->fv_iter(f_it); fv_it.is_valid(); ++fv_it)
-		{
-			POINT3D v;
-			v = mesh->point((*fv_it));
-			glVertex3d(v[0], v[1], v[2]);
-		}
-		glEnd();
-	}
+	
+	paintFaces();
 
 	glPopAttrib();
 }
 
 void Render::buildSmooth()
 {
-	if (!mesh)
+	if (!mesh.triMesh && !mesh.quadMesh)
 	{
 		return;
 	}
@@ -279,22 +327,12 @@ void Render::buildSmooth()
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	setColoredMaterial(10);
 
-	for (auto f_it = mesh->faces_begin(); f_it != mesh->faces_end(); ++f_it)
-	{
-		glBegin(GL_POLYGON);
-		for (auto fv_it = mesh->fv_iter(f_it); fv_it.is_valid(); ++fv_it)
-		{
-			POINT3D v;
-			v = mesh->point((*fv_it));
-			glVertex3d(v[0], v[1], v[2]);
-		}
-		glEnd();
-	}
+	paintFaces();
 }
 
 void Render::buildFlat()
 {
-	if (!mesh)
+	if (!mesh.triMesh && !mesh.quadMesh)
 	{
 		return;
 	}
@@ -308,22 +346,12 @@ void Render::buildFlat()
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	setColoredMaterial(10);
 
-	for (auto f_it = mesh->faces_begin(); f_it != mesh->faces_end(); ++f_it)
-	{
-		glBegin(GL_POLYGON);
-		for (auto fv_it = mesh->fv_iter(f_it); fv_it.is_valid(); ++fv_it)
-		{
-			POINT3D v;
-			v = mesh->point((*fv_it));
-			glVertex3d(v[0], v[1], v[2]);
-		}
-		glEnd();
-	}
+	paintFaces();
 
 }
 void Render::buildWireFlat()
 {
-	if (!mesh)
+	if (!mesh.triMesh && !mesh.quadMesh)
 	{
 		return;
 	}
@@ -348,17 +376,7 @@ void Render::buildWireFlat()
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	setColoredMaterial(10);
 
-	for (auto f_it = mesh->faces_begin(); f_it != mesh->faces_end(); ++f_it)
-	{
-		glBegin(GL_POLYGON);
-		for (auto fv_it = mesh->fv_iter(f_it); fv_it.is_valid(); ++fv_it)
-		{
-			POINT3D v;
-			v = mesh->point((*fv_it));
-			glVertex3d(v[0], v[1], v[2]);
-		}
-		glEnd();
-	}
+	paintFaces();
 
 	glDisable(GL_POLYGON_OFFSET_FILL);
 
@@ -366,17 +384,8 @@ void Render::buildWireFlat()
 	glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
 	glColor3d(0.0f, 0.0f, 0.0f);
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-	for (auto f_it = mesh->faces_begin(); f_it != mesh->faces_end(); ++f_it)
-	{
-		glBegin(GL_POLYGON);
-		for (auto fv_it = mesh->fv_iter(f_it); fv_it.is_valid(); ++fv_it)
-		{
-			POINT3D v;
-			v = mesh->point((*fv_it));
-			glVertex3d(v[0], v[1], v[2]);
-		}
-		glEnd();
-	}
+
+	paintFaces();
 
 	glDisable(GL_COLOR_MATERIAL);
 

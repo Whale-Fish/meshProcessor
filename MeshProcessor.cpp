@@ -5,7 +5,8 @@ MeshProcessor::MeshProcessor(QWidget *parent)
 {
     ui.setupUi(this);
 	vWidget = new ViewWidget(this);
-	mesh = new PolygonMesh();
+	mesh.triMesh = new TriMesh();
+	isTri = true;
 
 	createMenu();
 	createActions();
@@ -21,10 +22,16 @@ MeshProcessor::~MeshProcessor()
 		vWidget = nullptr;
 	}
 
-	if (mesh)
+	if (mesh.quadMesh)
 	{
-		delete mesh;
-		mesh = nullptr;
+		delete mesh.quadMesh;
+		mesh.quadMesh = nullptr;
+	}
+
+	if (mesh.triMesh)
+	{
+		mesh.triMesh;
+		mesh.triMesh = nullptr;
 	}
 }
 
@@ -37,11 +44,17 @@ void MeshProcessor::createMenu()
 
 void MeshProcessor::createActions() 
 {
-	openQuadFile = new QAction(QStringLiteral("file open"), this);
+	openQuadFile = new QAction(QStringLiteral("quadMesh"), this);
 	file->addAction(openQuadFile);  //file 可以试下模板写一下mesh输入
+	QIcon icon0;
+	icon0.addFile(QString::fromUtf8("Icons/fileopen.png"), QSize(), QIcon::Normal, QIcon::Off);
+	openQuadFile->setIcon(icon0);
+
+	openTriFile = new QAction(QStringLiteral("triMesh"), this);
+	file->addAction(openTriFile);  //file 可以试下模板写一下mesh输入
 	QIcon icon1;
 	icon1.addFile(QString::fromUtf8("Icons/fileopen.png"), QSize(), QIcon::Normal, QIcon::Off);
-	openQuadFile->setIcon(icon1);
+	openTriFile->setIcon(icon1);
 
 	pointMode = new QAction(QStringLiteral("point cloud"), this);
 	render->addAction(pointMode);
@@ -83,9 +96,22 @@ void MeshProcessor::createActions()
 	subdivsion->addAction(subSqrt2);
 }
 
+void MeshProcessor::updateActionsEnabledStatus()
+{
+	if (isTri)
+	{
+		subSqrt2->setEnabled(false);
+	}
+	else
+	{
+		subSqrt2->setEnabled(true);
+	}
+}
+
 void MeshProcessor::signalsConnetSlots() 
 {
-	connect(openQuadFile, SIGNAL(triggered()), this, SLOT(openFile()));
+	connect(openQuadFile, SIGNAL(triggered()), this, SLOT(openQuadFileAction()));
+	connect(openTriFile, SIGNAL(triggered()), this, SLOT(openTriFileAction()));
 
 	connect(pointMode, SIGNAL(triggered()), this, SLOT(showPoints()));
 	connect(wireFrameMode, SIGNAL(triggered()), this, SLOT(showWireFrame()));
@@ -138,8 +164,14 @@ void  MeshProcessor::setCurFileName(std::string path)
 	}
 }
 
-void MeshProcessor::openFile()
+void MeshProcessor::openTriFileAction()
 {
+	delete mesh.quadMesh;
+	mesh.quadMesh = nullptr;
+	mesh.triMesh = new TriMesh();
+	isTri = true;
+	updateActionsEnabledStatus();
+
 	OpenMesh::IO::Options opt = OpenMesh::IO::Options::VertexNormal;
 
 	QString qPath = QFileDialog::getOpenFileName(this, QStringLiteral("open"), "./tri_mesh/cube_nor.obj", QStringLiteral("file type (*.obj);;file type (*.off)"));
@@ -147,13 +179,38 @@ void MeshProcessor::openFile()
 
 	setCurFileName(path);
 
-	mesh->request_vertex_normals();
-	if (!OpenMesh::IO::read_mesh(*mesh, path, opt))
+	mesh.triMesh->request_vertex_normals();
+	if (!OpenMesh::IO::read_mesh(*mesh.triMesh, path, opt))
 	{
 		printf("mesh file open error!");
 	}
 
-	vWidget->setMesh(mesh);
+	vWidget->setMesh(mesh.triMesh);
+	alg.subCnt = 0;
+}
+
+void MeshProcessor::openQuadFileAction()
+{
+	delete mesh.triMesh;
+	mesh.triMesh = nullptr;
+	mesh.quadMesh = new PolygonMesh();
+	isTri = false;
+	updateActionsEnabledStatus();
+
+	OpenMesh::IO::Options opt = OpenMesh::IO::Options::VertexNormal;
+
+	QString qPath = QFileDialog::getOpenFileName(this, QStringLiteral("open"), "./quad_mesh/cube_nor.obj", QStringLiteral("file type (*.obj);;file type (*.off)"));
+	std::string path = qPath.toStdString();
+
+	setCurFileName(path);
+
+	mesh.quadMesh->request_vertex_normals();
+	if (!OpenMesh::IO::read_mesh(*mesh.quadMesh, path, opt))
+	{
+		printf("mesh file open error!");
+	}
+
+	vWidget->setMesh(mesh.quadMesh);
 	alg.subCnt = 0;
 }
 
@@ -194,11 +251,11 @@ void MeshProcessor::showSmooth()
 
 void MeshProcessor::subMeshSqrt2()
 {
-	PolygonMesh newMesh(*mesh);
+	PolygonMesh newMesh(*mesh.quadMesh);
 
 	long t1, t2;
 	t1 = GetTickCount();
-	alg.meshSubdivision(&newMesh, *mesh, Subdivision::SQRT2);
+	alg.meshSubdivision(&newMesh, *mesh.quadMesh, Subdivision::SQRT2);
 	vWidget->update();
 	t2 = GetTickCount();
 

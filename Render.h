@@ -26,10 +26,12 @@ public:
 	void setMaterialByMode(unsigned int mode);
 	void setColoredMaterial(int color);
 	void setRenderMesh(PolygonMesh* mesh);
+	void setRenderMesh(TriMesh* mesh);
 	void setRenderMode(unsigned int mode);
 	void updateRenderingMaterial(float mat[]);
 
 	// render mode
+	void paintFaces();
 	void build();
 	void buildPoints();
 	void buildWireFrame();
@@ -39,7 +41,10 @@ public:
 	void buildWireFlat();
 
 private:
-	PolygonMesh* mesh;
+	union {
+		PolygonMesh *quadMesh;
+		TriMesh *triMesh;
+	}mesh;
 
 private:
 	unsigned int mode;
