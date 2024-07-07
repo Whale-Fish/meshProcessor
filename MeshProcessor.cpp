@@ -52,9 +52,13 @@ void MeshProcessor::createActions()
 
 	openTriFile = new QAction(QStringLiteral("triMesh"), this);
 	file->addAction(openTriFile);  //file 可以试下模板写一下mesh输入
+	openTriFile->setIcon(icon0);
+
+	saveFile = new QAction(QStringLiteral("save"), this);
+	file->addAction(saveFile);  //file 可以试下模板写一下mesh输入
 	QIcon icon1;
-	icon1.addFile(QString::fromUtf8("Icons/fileopen.png"), QSize(), QIcon::Normal, QIcon::Off);
-	openTriFile->setIcon(icon1);
+	icon1.addFile(QString::fromUtf8("Icons/filesave.png"), QSize(), QIcon::Normal, QIcon::Off);
+	saveFile->setIcon(icon1);
 
 	pointMode = new QAction(QStringLiteral("point cloud"), this);
 	render->addAction(pointMode);
@@ -94,6 +98,9 @@ void MeshProcessor::createActions()
 
 	subSqrt2 = new QAction(QStringLiteral("sqrt2"), this);
 	subdivsion->addAction(subSqrt2);
+
+	subSqrt3 = new QAction(QStringLiteral("sqrt3"), this);
+	subdivsion->addAction(subSqrt3);
 }
 
 void MeshProcessor::updateActionsEnabledStatus()
@@ -101,10 +108,12 @@ void MeshProcessor::updateActionsEnabledStatus()
 	if (isTri)
 	{
 		subSqrt2->setEnabled(false);
+		subSqrt3->setEnabled(true);
 	}
 	else
 	{
 		subSqrt2->setEnabled(true);
+		subSqrt3->setEnabled(false);
 	}
 }
 
@@ -112,6 +121,7 @@ void MeshProcessor::signalsConnetSlots()
 {
 	connect(openQuadFile, SIGNAL(triggered()), this, SLOT(openQuadFileAction()));
 	connect(openTriFile, SIGNAL(triggered()), this, SLOT(openTriFileAction()));
+	connect(saveFile, SIGNAL(triggered()), this, SLOT(saveFileAction()));
 
 	connect(pointMode, SIGNAL(triggered()), this, SLOT(showPoints()));
 	connect(wireFrameMode, SIGNAL(triggered()), this, SLOT(showWireFrame()));
@@ -121,6 +131,8 @@ void MeshProcessor::signalsConnetSlots()
 	connect(wireFlatMode, SIGNAL(triggered()), this, SLOT(showWireFlat()));
 
 	connect(subSqrt2, SIGNAL(triggered()), this, SLOT(subMeshSqrt2()));
+	connect(subSqrt3, SIGNAL(triggered()), this, SLOT(subMeshSqrt3()));
+	
 }
 
 Render* MeshProcessor::getRenderer()
@@ -214,6 +226,32 @@ void MeshProcessor::openQuadFileAction()
 	alg.subCnt = 0;
 }
 
+void MeshProcessor::saveFileAction()
+{
+	if (!mesh.triMesh && !mesh.quadMesh)
+	{
+		return;
+	}
+
+	char mesh_name[80];
+	const char* s = curFileName.data();
+	const char* mode = curActionName.data();
+	sprintf(mesh_name, "outputFile//%s_%s_%d.obj", mode, s, alg.subCnt);
+
+	if (mesh.triMesh) {
+		if (!OpenMesh::IO::write_mesh(*mesh.triMesh, mesh_name, OpenMesh::IO::Options::VertexNormal))
+		{
+			printf("write mesh file is error!\n");
+		}
+	}
+	else {
+		if (!OpenMesh::IO::write_mesh(*mesh.quadMesh, mesh_name, OpenMesh::IO::Options::VertexNormal))
+		{
+			printf("write mesh file is error!\n");
+		}
+	}
+}
+
 void MeshProcessor::showPoints()
 {
 	getRenderer()->setRenderMode(0x0001);
@@ -255,12 +293,26 @@ void MeshProcessor::subMeshSqrt2()
 
 	long t1, t2;
 	t1 = GetTickCount();
-	alg.meshSubdivision(&newMesh, *mesh.quadMesh, Subdivision::SQRT2);
+	alg.QuadMeshSubdivision(&newMesh, *mesh.quadMesh, Subdivision::SQRT2);
 	vWidget->update();
 	t2 = GetTickCount();
 
 	alg.subCnt++;
 	printf("%d th sqrt2 subdivsion cost time: %d\n", alg.subCnt, t2 - t1);
+	curActionName = "sqrt2";
 }
 
+void MeshProcessor::subMeshSqrt3()
+{
+	TriMesh newMesh(*mesh.triMesh);
 
+	long t1, t2;
+	t1 = GetTickCount();
+	alg.TriMeshSubdivision(&newMesh, *mesh.triMesh, Subdivision::SQRT3);
+	vWidget->update();
+	t2 = GetTickCount();
+
+	alg.subCnt++;
+	printf("%d th sqrt3 subdivsion cost time: %d\n", alg.subCnt, t2 - t1);
+	curActionName = "sqrt3";
+}

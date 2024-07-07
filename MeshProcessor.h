@@ -28,7 +28,8 @@ private:
 	QMenu* subdivsion;
 
 	QAction *openQuadFile;
-	QAction *openTriFile; // todo
+	QAction *openTriFile;
+	QAction *saveFile;
 
 	QAction *pointMode;
 	QAction *wireFrameMode;
@@ -38,6 +39,7 @@ private:
 	QAction *wireFlatMode;
 
 	QAction *subSqrt2;
+	QAction *subSqrt3;
 
 private:
 	union{
@@ -47,6 +49,7 @@ private:
 
 	bool isTri;
 	std::string curFileName;
+	std::string  curActionName;
 	Algorithm alg;
 
 private:
@@ -60,6 +63,7 @@ private:
 private slots:
 	void openTriFileAction();
 	void openQuadFileAction();
+	void saveFileAction();
 	void showPoints();
 	void showWireFrame();
 	void showHiddenWire();
@@ -67,4 +71,5 @@ private slots:
 	void showWireFlat();
 	void showSmooth();
 	void subMeshSqrt2();
+	void subMeshSqrt3(); 
 };

@@ -12,9 +12,8 @@ public:
 	};
 
 	bool subSqrt2(PolygonMesh* src, PolygonMesh& dest);
+	bool subSqrt3(TriMesh* src, TriMesh& dest);
 
-
-private:
 	SubType curType;
 };
 
