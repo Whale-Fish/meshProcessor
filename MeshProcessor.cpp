@@ -96,24 +96,31 @@ void MeshProcessor::createActions()
 	icon7.addFile(QString::fromUtf8("Icons/flatlines.png"), QSize(), QIcon::Normal, QIcon::Off);
 	wireFlatMode->setIcon(icon7);
 
-	subSqrt2 = new QAction(QStringLiteral("sqrt2"), this);
+	subSqrt2 = new QAction(QStringLiteral("Sqrt2"), this);
 	subdivsion->addAction(subSqrt2);
 
-	subSqrt3 = new QAction(QStringLiteral("sqrt3"), this);
+	subISqrt2 = new QAction(QStringLiteral("ISqrt2"), this);
+	subdivsion->addAction(subISqrt2);
+
+	subSqrt3 = new QAction(QStringLiteral("Sqrt3"), this);
 	subdivsion->addAction(subSqrt3);
+
+	subISqrt3 = new QAction(QStringLiteral("ISqrt3"), this);
+	subdivsion->addAction(subISqrt3);
 }
 
-void MeshProcessor::updateActionsEnabledStatus()
+void MeshProcessor::updateMenuActions()
 {
+	subdivsion->clear();
 	if (isTri)
 	{
-		subSqrt2->setEnabled(false);
-		subSqrt3->setEnabled(true);
+		subdivsion->addAction(subSqrt3);
+		subdivsion->addAction(subISqrt3);
 	}
 	else
 	{
-		subSqrt2->setEnabled(true);
-		subSqrt3->setEnabled(false);
+		subdivsion->addAction(subSqrt2);
+		subdivsion->addAction(subISqrt2);
 	}
 }
 
@@ -132,6 +139,8 @@ void MeshProcessor::signalsConnetSlots()
 
 	connect(subSqrt2, SIGNAL(triggered()), this, SLOT(subMeshSqrt2()));
 	connect(subSqrt3, SIGNAL(triggered()), this, SLOT(subMeshSqrt3()));
+	connect(subISqrt2, SIGNAL(triggered()), this, SLOT(subMeshISqrt2()));
+	connect(subISqrt3, SIGNAL(triggered()), this, SLOT(subMeshISqrt3()));
 	
 }
 
@@ -182,7 +191,7 @@ void MeshProcessor::openTriFileAction()
 	mesh.quadMesh = nullptr;
 	mesh.triMesh = new TriMesh();
 	isTri = true;
-	updateActionsEnabledStatus();
+	updateMenuActions();
 
 	OpenMesh::IO::Options opt = OpenMesh::IO::Options::VertexNormal;
 
@@ -207,7 +216,7 @@ void MeshProcessor::openQuadFileAction()
 	mesh.triMesh = nullptr;
 	mesh.quadMesh = new PolygonMesh();
 	isTri = false;
-	updateActionsEnabledStatus();
+	updateMenuActions();
 
 	OpenMesh::IO::Options opt = OpenMesh::IO::Options::VertexNormal;
 
@@ -302,6 +311,21 @@ void MeshProcessor::subMeshSqrt2()
 	curActionName = "sqrt2";
 }
 
+void MeshProcessor::subMeshISqrt2()
+{
+	PolygonMesh newMesh(*mesh.quadMesh);
+
+	long t1, t2;
+	t1 = GetTickCount();
+	alg.QuadMeshSubdivision(&newMesh, *mesh.quadMesh, Subdivision::ISQRT2);
+	vWidget->update();
+	t2 = GetTickCount();
+
+	alg.subCnt++;
+	printf("%d th Isqrt2 subdivsion cost time: %d\n", alg.subCnt, t2 - t1);
+	curActionName = "Isqrt2";
+}
+
 void MeshProcessor::subMeshSqrt3()
 {
 	TriMesh newMesh(*mesh.triMesh);
@@ -315,4 +339,19 @@ void MeshProcessor::subMeshSqrt3()
 	alg.subCnt++;
 	printf("%d th sqrt3 subdivsion cost time: %d\n", alg.subCnt, t2 - t1);
 	curActionName = "sqrt3";
+}
+
+void MeshProcessor::subMeshISqrt3()
+{
+	TriMesh newMesh(*mesh.triMesh);
+
+	long t1, t2;
+	t1 = GetTickCount();
+	alg.TriMeshSubdivision(&newMesh, *mesh.triMesh, Subdivision::ISQRT3);
+	vWidget->update();
+	t2 = GetTickCount();
+
+	alg.subCnt++;
+	printf("%d th Isqrt3 subdivsion cost time: %d\n", alg.subCnt, t2 - t1);
+	curActionName = "Isqrt3";
 }

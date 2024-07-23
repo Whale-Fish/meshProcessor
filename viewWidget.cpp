@@ -1,5 +1,6 @@
+#pragma once
 #include "ViewWidget.h"
-
+#include <QPainter>
 
 ViewWidget::ViewWidget(QWidget *parent)
 {
@@ -28,6 +29,18 @@ void ViewWidget::resizeGL(int w, int h)
 void ViewWidget::paintGL()
 {
 	sceneViewer->sceneView();
+
+	//other things in painting
+	QPainter painter(this);
+	painter.setPen(Qt::black);
+	painter.setFont(QFont("Arial", 10));
+
+	QString text = "text";
+	int padding = 8;
+	int x = width() - painter.fontMetrics().width(text) - padding;
+	int y = height() - padding;
+
+	painter.drawText(x, y, text);
 }
 
 void ViewWidget::mouseMoveEvent(QMouseEvent *e)

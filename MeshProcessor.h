@@ -40,6 +40,8 @@ private:
 
 	QAction *subSqrt2;
 	QAction *subSqrt3;
+	QAction *subISqrt2;
+	QAction *subISqrt3;
 
 private:
 	union{
@@ -55,7 +57,7 @@ private:
 private:
 	void createMenu();
 	void createActions();
-	void updateActionsEnabledStatus();
+	void updateMenuActions();
 	void signalsConnetSlots();
 	void setCurFileName(std::string path);
 
@@ -70,6 +72,9 @@ private slots:
 	void showFlat();
 	void showWireFlat();
 	void showSmooth();
+
 	void subMeshSqrt2();
 	void subMeshSqrt3(); 
+	void subMeshISqrt2();
+	void subMeshISqrt3();
 };
