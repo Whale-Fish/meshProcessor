@@ -157,6 +157,7 @@ Render* MeshProcessor::getRenderer()
 
 void  MeshProcessor::setCurFileName(std::string path)
 {
+	curFileName.clear();
 	int strSize = path.size();
 
 	if (strSize == 0)
@@ -207,6 +208,8 @@ void MeshProcessor::openTriFileAction()
 	}
 
 	vWidget->setMesh(mesh.triMesh);
+	vWidget->setCurAction("");
+	vWidget->setCurFile(curFileName);
 	alg.subCnt = 0;
 }
 
@@ -232,6 +235,8 @@ void MeshProcessor::openQuadFileAction()
 	}
 
 	vWidget->setMesh(mesh.quadMesh);
+	vWidget->setCurAction("");
+	vWidget->setCurFile(curFileName);
 	alg.subCnt = 0;
 }
 
@@ -309,6 +314,7 @@ void MeshProcessor::subMeshSqrt2()
 	alg.subCnt++;
 	printf("%d th sqrt2 subdivsion cost time: %d\n", alg.subCnt, t2 - t1);
 	curActionName = "sqrt2";
+	vWidget->setCurAction(curActionName);
 }
 
 void MeshProcessor::subMeshISqrt2()
@@ -324,6 +330,7 @@ void MeshProcessor::subMeshISqrt2()
 	alg.subCnt++;
 	printf("%d th Isqrt2 subdivsion cost time: %d\n", alg.subCnt, t2 - t1);
 	curActionName = "Isqrt2";
+	vWidget->setCurAction(curActionName);
 }
 
 void MeshProcessor::subMeshSqrt3()
@@ -339,6 +346,7 @@ void MeshProcessor::subMeshSqrt3()
 	alg.subCnt++;
 	printf("%d th sqrt3 subdivsion cost time: %d\n", alg.subCnt, t2 - t1);
 	curActionName = "sqrt3";
+	vWidget->setCurAction(curActionName);
 }
 
 void MeshProcessor::subMeshISqrt3()
@@ -354,4 +362,5 @@ void MeshProcessor::subMeshISqrt3()
 	alg.subCnt++;
 	printf("%d th Isqrt3 subdivsion cost time: %d\n", alg.subCnt, t2 - t1);
 	curActionName = "Isqrt3";
+	vWidget->setCurAction(curActionName);
 }

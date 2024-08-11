@@ -1,6 +1,7 @@
 #pragma once
 #include "ViewWidget.h"
 #include <QPainter>
+#include <iostream>
 
 ViewWidget::ViewWidget(QWidget *parent)
 {
@@ -32,15 +33,26 @@ void ViewWidget::paintGL()
 
 	//other things in painting
 	QPainter painter(this);
+	
 	painter.setPen(Qt::black);
 	painter.setFont(QFont("Arial", 10));
 
-	QString text = "text";
 	int padding = 8;
-	int x = width() - painter.fontMetrics().width(text) - padding;
-	int y = height() - padding;
+	if (curAtion.size()) 
+	{
+		QString textAction = QString::fromStdString(curAtion);
+		int x = width() - painter.fontMetrics().width(textAction) - padding;
+		int y = height() - padding;
+		painter.drawText(x, y, textAction);
+	}
 
-	painter.drawText(x, y, text);
+	if (curFile.size())
+	{
+		QString textName = QString::fromStdString(curFile);
+		int x = padding;
+		int y = height() - padding;
+		painter.drawText(x, y, textName);
+	}
 }
 
 void ViewWidget::mouseMoveEvent(QMouseEvent *e)
@@ -85,11 +97,21 @@ void  ViewWidget::setMesh(PolygonMesh* &mesh)
 	r->setRenderMesh(mesh);
 }
 
-void  ViewWidget::setMesh(TriMesh* &mesh)
+void ViewWidget::setMesh(TriMesh* &mesh)
 {
 	Render *r;
 	sceneViewer->getRender(r);
 	r->setRenderMesh(mesh);
+}
+
+void ViewWidget::setCurAction(const std::string& action)
+{
+	this->curAtion = action;
+}
+
+void ViewWidget::setCurFile(const std::string& fileName)
+{
+	this->curFile = fileName;
 }
 
 void ViewWidget::getSceneViewer(SceneView* &sceneViewer)

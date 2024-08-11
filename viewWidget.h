@@ -18,12 +18,15 @@ public:
 
 	void setMesh(PolygonMesh* &mesh);
 	void setMesh(TriMesh* &mesh);
+	void setCurAction(const std::string& action);
+	void setCurFile(const std::string& fileName);
 	void getSceneViewer(SceneView* &sceneViewer);
 
 	SceneView* sceneViewer;
 
 private:
-	
+	std::string curAtion = "";
+	std::string curFile = "";
 	QPoint lastPos;
 
 private:
