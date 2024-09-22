@@ -44,10 +44,8 @@ private:
 	QAction *subISqrt3;
 
 private:
-	union{
-		PolygonMesh *quadMesh;
-		TriMesh *triMesh;
-	}mesh;
+	PolygonMesh *quadMesh;
+	TriMesh *triMesh;
 
 	bool isTri;
 	std::string curFileName;

@@ -5,7 +5,8 @@ MeshProcessor::MeshProcessor(QWidget *parent)
 {
     ui.setupUi(this);
 	vWidget = new ViewWidget(this);
-	mesh.triMesh = new TriMesh();
+	triMesh = new TriMesh();
+	quadMesh = new PolygonMesh();
 	isTri = true;
 
 	createMenu();
@@ -22,16 +23,16 @@ MeshProcessor::~MeshProcessor()
 		vWidget = nullptr;
 	}
 
-	if (mesh.quadMesh)
+	if (quadMesh)
 	{
-		delete mesh.quadMesh;
-		mesh.quadMesh = nullptr;
+		delete quadMesh;
+		quadMesh = nullptr;
 	}
 
-	if (mesh.triMesh)
+	if (triMesh)
 	{
-		mesh.triMesh;
-		mesh.triMesh = nullptr;
+		triMesh;
+		triMesh = nullptr;
 	}
 }
 
@@ -188,9 +189,13 @@ void  MeshProcessor::setCurFileName(std::string path)
 
 void MeshProcessor::openTriFileAction()
 {
-	delete mesh.quadMesh;
-	mesh.quadMesh = nullptr;
-	mesh.triMesh = new TriMesh();
+	//if (quadMesh) 
+	//{
+	//	delete quadMesh;
+	//	quadMesh = nullptr;
+	//	triMesh = new TriMesh();
+	//}
+
 	isTri = true;
 	updateMenuActions();
 
@@ -201,13 +206,13 @@ void MeshProcessor::openTriFileAction()
 
 	setCurFileName(path);
 
-	mesh.triMesh->request_vertex_normals();
-	if (!OpenMesh::IO::read_mesh(*mesh.triMesh, path, opt))
+	triMesh->request_vertex_normals();
+	if (!OpenMesh::IO::read_mesh(*triMesh, path, opt))
 	{
 		printf("mesh file open error!");
 	}
 
-	vWidget->setMesh(mesh.triMesh);
+	vWidget->setMesh(triMesh);
 	vWidget->setCurAction("");
 	vWidget->setCurFile(curFileName);
 	alg.subCnt = 0;
@@ -215,9 +220,13 @@ void MeshProcessor::openTriFileAction()
 
 void MeshProcessor::openQuadFileAction()
 {
-	delete mesh.triMesh;
-	mesh.triMesh = nullptr;
-	mesh.quadMesh = new PolygonMesh();
+	//if (triMesh)
+	//{
+	//	delete triMesh;
+	//	triMesh = nullptr;
+	//	quadMesh = new PolygonMesh();
+	//}
+
 	isTri = false;
 	updateMenuActions();
 
@@ -228,13 +237,13 @@ void MeshProcessor::openQuadFileAction()
 
 	setCurFileName(path);
 
-	mesh.quadMesh->request_vertex_normals();
-	if (!OpenMesh::IO::read_mesh(*mesh.quadMesh, path, opt))
+	quadMesh->request_vertex_normals();
+	if (!OpenMesh::IO::read_mesh(*quadMesh, path, opt))
 	{
 		printf("mesh file open error!");
 	}
 
-	vWidget->setMesh(mesh.quadMesh);
+	vWidget->setMesh(quadMesh);
 	vWidget->setCurAction("");
 	vWidget->setCurFile(curFileName);
 	alg.subCnt = 0;
@@ -242,8 +251,9 @@ void MeshProcessor::openQuadFileAction()
 
 void MeshProcessor::saveFileAction()
 {
-	if (!mesh.triMesh && !mesh.quadMesh)
+	if (!triMesh && !quadMesh)
 	{
+		std::cout<<"there has no model!"<<std::endl;
 		return;
 	}
 
@@ -252,14 +262,14 @@ void MeshProcessor::saveFileAction()
 	const char* mode = curActionName.data();
 	sprintf(mesh_name, "outputFile//%s_%s_%d.obj", mode, s, alg.subCnt);
 
-	if (mesh.triMesh) {
-		if (!OpenMesh::IO::write_mesh(*mesh.triMesh, mesh_name, OpenMesh::IO::Options::VertexNormal))
+	if (isTri) {
+		if (!OpenMesh::IO::write_mesh(*triMesh, mesh_name, OpenMesh::IO::Options::VertexNormal))
 		{
 			printf("write mesh file is error!\n");
 		}
 	}
 	else {
-		if (!OpenMesh::IO::write_mesh(*mesh.quadMesh, mesh_name, OpenMesh::IO::Options::VertexNormal))
+		if (!OpenMesh::IO::write_mesh(*quadMesh, mesh_name, OpenMesh::IO::Options::VertexNormal))
 		{
 			printf("write mesh file is error!\n");
 		}
@@ -303,11 +313,11 @@ void MeshProcessor::showSmooth()
 
 void MeshProcessor::subMeshSqrt2()
 {
-	PolygonMesh newMesh(*mesh.quadMesh);
+	PolygonMesh newMesh(*quadMesh);
 
 	long t1, t2;
 	t1 = GetTickCount();
-	alg.QuadMeshSubdivision(&newMesh, *mesh.quadMesh, Subdivision::SQRT2);
+	alg.QuadMeshSubdivision(&newMesh, *quadMesh, Subdivision::SQRT2);
 	vWidget->update();
 	t2 = GetTickCount();
 
@@ -319,11 +329,11 @@ void MeshProcessor::subMeshSqrt2()
 
 void MeshProcessor::subMeshISqrt2()
 {
-	PolygonMesh newMesh(*mesh.quadMesh);
+	PolygonMesh newMesh(*quadMesh);
 
 	long t1, t2;
 	t1 = GetTickCount();
-	alg.QuadMeshSubdivision(&newMesh, *mesh.quadMesh, Subdivision::ISQRT2);
+	alg.QuadMeshSubdivision(&newMesh, *quadMesh, Subdivision::ISQRT2);
 	vWidget->update();
 	t2 = GetTickCount();
 
@@ -335,11 +345,11 @@ void MeshProcessor::subMeshISqrt2()
 
 void MeshProcessor::subMeshSqrt3()
 {
-	TriMesh newMesh(*mesh.triMesh);
+	TriMesh newMesh(*triMesh);
 
 	long t1, t2;
 	t1 = GetTickCount();
-	alg.TriMeshSubdivision(&newMesh, *mesh.triMesh, Subdivision::SQRT3);
+	alg.TriMeshSubdivision(&newMesh, *triMesh, Subdivision::SQRT3);
 	vWidget->update();
 	t2 = GetTickCount();
 
@@ -351,11 +361,11 @@ void MeshProcessor::subMeshSqrt3()
 
 void MeshProcessor::subMeshISqrt3()
 {
-	TriMesh newMesh(*mesh.triMesh);
+	TriMesh newMesh(*triMesh);
 
 	long t1, t2;
 	t1 = GetTickCount();
-	alg.TriMeshSubdivision(&newMesh, *mesh.triMesh, Subdivision::ISQRT3);
+	alg.TriMeshSubdivision(&newMesh, *triMesh, Subdivision::ISQRT3);
 	vWidget->update();
 	t2 = GetTickCount();
 

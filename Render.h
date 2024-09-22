@@ -27,6 +27,7 @@ public:
 	void setColoredMaterial(int color);
 	void setRenderMesh(PolygonMesh* mesh);
 	void setRenderMesh(TriMesh* mesh);
+	void releaseRenderMesh();
 	void setRenderMode(unsigned int mode);
 	void updateRenderingMaterial(float mat[]);
 
@@ -41,13 +42,12 @@ public:
 	void buildWireFlat();
 
 private:
-	union {
-		PolygonMesh *quadMesh;
-		TriMesh *triMesh;
-	}mesh;
+	PolygonMesh *quadMesh;
+	TriMesh *triMesh;
 
 private:
 	unsigned int mode;
+	bool isTri = true;
 	GLfloat matRendering[17];
 };
 
